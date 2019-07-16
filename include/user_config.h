@@ -263,7 +263,12 @@ os_timer_t bme280_sensor_timer;
 #include "driver/BitBang_TLC5947.h"
 
 
+#include "driver/IIC_ADS1x15.h"
 
+
+//#define SCAN_IIC
+#define SCAN_IIC_first_address 	0x90
+#define SCAN_IIC_last_address	0x92
 
 
 

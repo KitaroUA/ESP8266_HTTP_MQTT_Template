@@ -19,14 +19,14 @@ int ICACHE_FLASH_ATTR tpl_set_mqtt(HttpdConnData *connData, char *token, void **
 
 	if (os_strcmp(token,"v_mqtt")==0)
 	{
-//		os_sprintf(buff, "\"%s\"", mFlag.ntp);
-		os_strcpy(buff, mFlag.mqtt_server);
+//		os_sprintf(buff, "\"%s\"", sysCfg.ntp);
+		os_strcpy(buff, sysCfg.mqtt_host);
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
 	if (os_strcmp(token,"mqtt_status")==0)
 	{
-		if (mFlag.mqtt_task_enabled == 1)
+		if (sysCfg.mqtt_task_enabled == 1)
 		{
 			os_strcpy(buff, "1");
 		}
@@ -35,7 +35,7 @@ int ICACHE_FLASH_ATTR tpl_set_mqtt(HttpdConnData *connData, char *token, void **
 			os_strcpy(buff, "0");
 
 		}
-//		os_sprintf(buff, "\"%s\"", mFlag.ntp);
+//		os_sprintf(buff, "\"%s\"", sysCfg.ntp);
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
@@ -56,7 +56,7 @@ int ICACHE_FLASH_ATTR cgi_set_mqtt(HttpdConnData *connData)
 	len=httpdFindArg(connData->post->buff, "mqttip", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.mqtt_server, buff);
+		os_strcpy(sysCfg.mqtt_host, buff);
 //		os_strcpy(ntp, buff);
 	}
 	memset(&buff[0], 0, sizeof(buff));
@@ -67,7 +67,7 @@ int ICACHE_FLASH_ATTR cgi_set_mqtt(HttpdConnData *connData)
 //		INFO("\r\n");
 //		INFO(buff);
 //		INFO("\r\n");
-		mFlag.mqtt_task_enabled = atoi(buff);
+		sysCfg.mqtt_task_enabled = atoi(buff);
 //		os_strcpy(ntp, buff);
 	}
 	memset(&buff[0], 0, sizeof(buff));
@@ -75,7 +75,7 @@ int ICACHE_FLASH_ATTR cgi_set_mqtt(HttpdConnData *connData)
 
 
 
-	AddCFG_Save();
+	SysCFG_Save();
 
 
 	httpdRedirect(connData, "/set_mqtt/set_mqtt.tpl");

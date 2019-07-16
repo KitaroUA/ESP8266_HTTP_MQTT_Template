@@ -183,11 +183,11 @@ static void ICACHE_FLASH_ATTR ntp_udp_recv(void *arg, char *pdata, unsigned shor
 	os_printf("\r\n");
 	os_printf("\r\n");
 
-//	dt->tm_hour += mFlag.timezone;
+//	dt->tm_hour += sysCfg.timezone;
 //	mktime(dt);
-	_daylight = mFlag.dst_flag;                 // Non-zero if daylight savings time is used
+	_daylight = sysCfg.dst_flag;                 // Non-zero if daylight savings time is used
 	_dstbias = 3600;                  			// Offset for Daylight Saving Time
-	_timezone = 0 - (mFlag.timezone*3600);      // Difference in seconds between GMT and local time
+	_timezone = 0 - (sysCfg.timezone*3600);      // Difference in seconds between GMT and local time
 
 	dt = localtime(&timestamp);
 	applyTZ(dt);

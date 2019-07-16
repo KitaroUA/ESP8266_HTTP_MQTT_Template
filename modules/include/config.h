@@ -33,29 +33,6 @@
 #include "os_type.h"
 #include "user_config.h"
 #include "ip_addr.h"
-typedef struct{
-	uint32_t cfg_holder;
-	uint8_t device_id[16];
-
-	uint8_t sta_ssid[64];
-	uint8_t sta_pwd[64];
-	uint32_t sta_type;
-
-	uint8_t mqtt_host[64];
-	uint32_t mqtt_port;
-	uint8_t mqtt_user[32];
-	uint8_t mqtt_pass[32];
-	uint32_t mqtt_keepalive;
-	uint8_t security;
-	uint8_t dhcp_sta_enabled; // 1 - true
-	struct ip_info staipinfo;
-	struct ip_info apipinfo;
-} SYSCFG;
-
-typedef struct {
-    uint8 flag;
-    uint8 pad[3];
-} SAVE_FLAG;
 
 
 #define number_of_temperature_options_channels 4
@@ -71,6 +48,51 @@ typedef struct {
 	uint8 lower_dimmer_value;	//
 	uint8 upper_dimmer_value;
 } Temperature_selector_struct;
+
+
+
+typedef struct{
+	uint8_t device_id[16];
+
+	uint8_t sta_ssid[64];
+	uint8_t sta_pwd[64];
+	uint32_t sta_type;
+
+	uint8_t mqtt_host[64];
+	uint32_t mqtt_port;
+	uint8_t mqtt_user[32];
+	uint8_t mqtt_pass[32];
+	uint32_t mqtt_keepalive;
+	uint8_t security;
+	uint8_t dhcp_sta_enabled; // 1 - true
+	struct ip_info staipinfo;
+	struct ip_info apipinfo;
+	uint8 tempOn_time[3];
+	uint8 tempOff_time[3];
+	int8  timezone;
+	uint8 hostname[30];
+	uint8 ntp[30];
+	uint8 ntp_flag;
+	uint8 dst_flag;
+	uint8 dst_active;
+	uint8 mqtt_task_enabled;
+	uint8 try;
+	uint32 minLight;
+    uint8 on_time[5];
+	uint8 off_time[5];
+	Temperature_selector_struct Temperature_selector_array[number_of_temperature_options_channels];
+	uint8 Temperature_display_array[2] ;
+
+
+
+} SYSCFG;
+
+typedef struct {
+    uint8 flag;
+    uint8 pad[3];
+} SAVE_FLAG;
+
+
 
 
 typedef struct {
@@ -96,12 +118,12 @@ typedef struct {
 
 
 void ICACHE_FLASH_ATTR SysCFG_Save();
-void ICACHE_FLASH_ATTR SysCFG_Load(uint8 RLoad);
+void ICACHE_FLASH_ATTR SysCFG_Load();
 
 extern SYSCFG sysCfg;
-extern MY_FLASH_STR mFlag;
+//extern MY_FLASH_STR sysCfg;
 
-void ICACHE_FLASH_ATTR AddCFG_Save (void);
+void ICACHE_FLASH_ATTR SysCFG_Save (void);
 void ICACHE_FLASH_ATTR AddCFG_Load  (void);
 void ICACHE_FLASH_ATTR Default_CFG(void);
 
@@ -143,5 +165,6 @@ void ICACHE_FLASH_ATTR Default_CFG(void);
 #define sap_nm_c 255
 #define sap_nm_d 0
 
+#define default_mqtt_host "192.168.104.100"
 
 #endif /* USER_CONFIG_H_ */

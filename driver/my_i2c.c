@@ -52,7 +52,7 @@ for (i=0;i<ByteNumbers;i++)
 i2c_start();
 i2c_writeByte(SAddr);
 if (!i2c_check_ack()) {
-  //os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+  os_printf("0x%x-%s-%s slave not ack... return \r\n", SAddr, __FILE__, __func__);
   i2c_stop();
   i2c_Do &= i2c_Free;			// ����������� ����
   return(0);
@@ -109,7 +109,7 @@ for (i=0;i<ByteNumbers;i++)
 i2c_start();
 i2c_writeByte(SAddr);
 if (!i2c_check_ack()) {
-  os_printf("Addr:%X-%s-%s slave not ack... return \r\n", SAddr, __FILE__, __func__);
+//  os_printf("Addr:%X-%s-%s slave not ack... return \r\n", SAddr, __FILE__, __func__);
   i2c_stop();
   i2c_Do &= i2c_Free;			// ����������� ����
   return(0);
@@ -346,6 +346,42 @@ uint8  ICACHE_FLASH_ATTR i2c_Test_Write(uint8 SAddr)	// ��������
 
 
 
+uint8  ICACHE_FLASH_ATTR i2c_Read_Scan(uint8 SAddr_first, uint8 SAddr_last)	// ��������� ��� � ������ Byte[] �������� ByteNumbers
+{
+
+	if (i2c_Do & i2c_Busy) return 0;
+
+	i2c_Do |= i2c_Busy; //	������������ ��������� - ���� �������
+
+	INFO("\r\n WiFi Scan \r\n");
+
+	i2c_pointer = 0;
+
+	if (SAddr_first > SAddr_last) return 0;
+	uint8 SAddr;
+	SAddr = SAddr_first;
+	do 	{
+		i2c_start();
+		i2c_writeByte(SAddr+1);
+		if (!i2c_check_ack())
+			{
+			INFO("Addr:%X-%s-%s slave not ack... return \r\n", SAddr, __FILE__, __func__);
+
+//			return(0);
+			}
+		else
+			{
+			INFO("\r\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Found Addr:%X \r\n", SAddr);
+			}
+		SAddr = SAddr >> 1;
+		SAddr++;
+		SAddr = SAddr << 1;
+		i2c_stop();
+		} while (SAddr <= SAddr_last);
+
+	i2c_Do &= i2c_Free;
+	return 1;
+}
 
 
 

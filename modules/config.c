@@ -40,49 +40,34 @@
 #include "debug.h"
 
 SYSCFG sysCfg;
-SAVE_FLAG saveFlag;
+//SAVE_FLAG saveFlag;
 
-MY_FLASH_STR mFlag;
+//MY_FLASH_STR sysCfg;
 
 void ICACHE_FLASH_ATTR
 SysCFG_Save()
 {
-	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-
-	if (saveFlag.flag == 0) {
-		spi_flash_erase_sector(CFG_LOCATION + 1);
-		spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+		spi_flash_erase_sector(CFG_LOCATION);
+		spi_flash_write((CFG_LOCATION ) * SPI_FLASH_SEC_SIZE,
 						(uint32 *)&sysCfg, sizeof(SYSCFG));
-		saveFlag.flag = 1;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	} else {
-		spi_flash_erase_sector(CFG_LOCATION + 0);
-		spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sysCfg, sizeof(SYSCFG));
-		saveFlag.flag = 0;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	}
 }
 
 void ICACHE_FLASH_ATTR
-SysCFG_Load(uint8 RLoad)
+SysCFG_Load()
 {
 
 	INFO("\r\nload ...\r\n");
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	if (saveFlag.flag == 0) {
+		spi_flash_read((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
+					   (uint32 *)&sysCfg, sizeof(SYSCFG));
+
+/*	if (saveFlag.flag == 0) {
 		spi_flash_read((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
 	} else {
 		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
 	}
+	*/
 /*
 	if( (sysCfg.cfg_holder != CFG_HOLDER) | (RLoad == 1)){
 		os_memset(&sysCfg, 0x00, sizeof sysCfg);
@@ -96,7 +81,7 @@ SysCFG_Load(uint8 RLoad)
 
 		os_sprintf(sysCfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
 //		os_sprintf(sysCfg.mqtt_host, "%s", MQTT_HOST);
-		os_sprintf(sysCfg.mqtt_host, "%s", mFlag.mqtt_server);
+		os_sprintf(sysCfg.mqtt_host, "%s", sysCfg.mqtt_server);
 		sysCfg.mqtt_port = MQTT_PORT;
 		os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 		os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
@@ -135,11 +120,11 @@ SysCFG_Load(uint8 RLoad)
 /*
  * FLASH part
  */
-
-void ICACHE_FLASH_ATTR AddCFG_Save (void)
+/*
+void ICACHE_FLASH_ATTR SysCFG_Save (void)
 {
 	spi_flash_erase_sector((CFG_LOCATION - 1));
-	spi_flash_write((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,(uint32 *)&mFlag, sizeof(MY_FLASH_STR));
+	spi_flash_write((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,(uint32 *)&sysCfg, sizeof(MY_FLASH_STR));
 
 }
 
@@ -148,9 +133,9 @@ void ICACHE_FLASH_ATTR AddCFG_Save (void)
 void ICACHE_FLASH_ATTR AddCFG_Load  (void)
 {
 	 spi_flash_read((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&mFlag, sizeof(MY_FLASH_STR));
+	                   (uint32 *)&sysCfg, sizeof(MY_FLASH_STR));
 }
-
+*/
 
 void ICACHE_FLASH_ATTR Default_CFG(void)
 {
@@ -160,14 +145,14 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 	os_memset(&sysCfg, 0x00, sizeof sysCfg);
 
 
-	sysCfg.cfg_holder = CFG_HOLDER;
+//	sysCfg.cfg_holder = CFG_HOLDER;
 
 	os_sprintf(sysCfg.sta_ssid, "%s", STA_SSID);
 	os_sprintf(sysCfg.sta_pwd, "%s", STA_PASS);
 	sysCfg.sta_type = STA_TYPE;
 
 	os_sprintf(sysCfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
-	os_sprintf(sysCfg.mqtt_host, "%s", mFlag.mqtt_server);
+	os_sprintf(sysCfg.mqtt_host, "%s", default_mqtt_host);
 	sysCfg.mqtt_port = MQTT_PORT;
 	os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 	os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
@@ -196,56 +181,55 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 
 
 
-	os_sprintf(mFlag.on_time, "%s", "0540");
-	os_sprintf(mFlag.off_time, "%s", "1320");
-	os_sprintf(mFlag.tempOff_time, "%s", "30");
-	os_sprintf(mFlag.tempOn_time, "%s", "45");
-	mFlag.minLight = 25000;
-	os_sprintf(mFlag.hostname, "ESP_IoT_04001");
-	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
-	mFlag.timezone = 2;
-	mFlag.ntp_flag=1;
-	mFlag.dst_flag=1;
-	mFlag.dst_active=1;
+	os_sprintf(sysCfg.on_time, "%s", "0540");
+	os_sprintf(sysCfg.off_time, "%s", "1320");
+	os_sprintf(sysCfg.tempOff_time, "%s", "30");
+	os_sprintf(sysCfg.tempOn_time, "%s", "45");
+	sysCfg.minLight = 25000;
+	os_sprintf(sysCfg.hostname, "ESP_IoT_04001");
+	os_sprintf(sysCfg.ntp, "0.ua.pool.ntp.org");
+	sysCfg.timezone = 2;
+	sysCfg.ntp_flag=1;
+	sysCfg.dst_flag=1;
+	sysCfg.dst_active=1;
 
 
-	mFlag.Temperature_selector_array[0].temparture_sensor=1;
-	mFlag.Temperature_selector_array[0].control_channel=1;
-	mFlag.Temperature_selector_array[0].on_temperature=255000;
-	mFlag.Temperature_selector_array[0].off_temperature=265000;
-	mFlag.Temperature_selector_array[0].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[0].upper_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[0].temparture_sensor=1;
+	sysCfg.Temperature_selector_array[0].control_channel=1;
+	sysCfg.Temperature_selector_array[0].on_temperature=255000;
+	sysCfg.Temperature_selector_array[0].off_temperature=265000;
+	sysCfg.Temperature_selector_array[0].lower_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[0].upper_dimmer_value=0xFF;
 
-	mFlag.Temperature_selector_array[1].temparture_sensor=0;
-	mFlag.Temperature_selector_array[1].control_channel=103;
-	mFlag.Temperature_selector_array[1].on_temperature=265000;
-	mFlag.Temperature_selector_array[1].off_temperature=275000;
-	mFlag.Temperature_selector_array[1].lower_dimmer_value=10;
-	mFlag.Temperature_selector_array[1].upper_dimmer_value=240;
+	sysCfg.Temperature_selector_array[1].temparture_sensor=0;
+	sysCfg.Temperature_selector_array[1].control_channel=103;
+	sysCfg.Temperature_selector_array[1].on_temperature=265000;
+	sysCfg.Temperature_selector_array[1].off_temperature=275000;
+	sysCfg.Temperature_selector_array[1].lower_dimmer_value=10;
+	sysCfg.Temperature_selector_array[1].upper_dimmer_value=240;
 
-	mFlag.Temperature_selector_array[2].temparture_sensor=0;
-	mFlag.Temperature_selector_array[2].control_channel=temperature_options_off;
-	mFlag.Temperature_selector_array[2].on_temperature=275000;
-	mFlag.Temperature_selector_array[2].off_temperature=285000;
-	mFlag.Temperature_selector_array[2].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[2].upper_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[2].temparture_sensor=0;
+	sysCfg.Temperature_selector_array[2].control_channel=temperature_options_off;
+	sysCfg.Temperature_selector_array[2].on_temperature=275000;
+	sysCfg.Temperature_selector_array[2].off_temperature=285000;
+	sysCfg.Temperature_selector_array[2].lower_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[2].upper_dimmer_value=0xFF;
 
-	mFlag.Temperature_selector_array[3].temparture_sensor=1;
-	mFlag.Temperature_selector_array[3].control_channel=3;
-	mFlag.Temperature_selector_array[3].on_temperature=285000;
-	mFlag.Temperature_selector_array[3].off_temperature=295000;
-	mFlag.Temperature_selector_array[3].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[3].upper_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[3].temparture_sensor=1;
+	sysCfg.Temperature_selector_array[3].control_channel=3;
+	sysCfg.Temperature_selector_array[3].on_temperature=285000;
+	sysCfg.Temperature_selector_array[3].off_temperature=295000;
+	sysCfg.Temperature_selector_array[3].lower_dimmer_value=0xFF;
+	sysCfg.Temperature_selector_array[3].upper_dimmer_value=0xFF;
 
-	 mFlag.Temperature_display_array[0]=0;
-	 mFlag.Temperature_display_array[1]=1;
+	 sysCfg.Temperature_display_array[0]=0;
+	 sysCfg.Temperature_display_array[1]=1;
 
-	 os_sprintf(mFlag.mqtt_server,"%s","192.168.104.100");
 
-	 mFlag.mqtt_task_enabled = 1;
-	 mFlag.try=0;
+	 sysCfg.mqtt_task_enabled = 1;
+	 sysCfg.try=0;
 
-	 AddCFG_Save();
+	 SysCFG_Save();
 }
 
 

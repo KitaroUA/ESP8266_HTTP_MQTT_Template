@@ -39,30 +39,30 @@ int ICACHE_FLASH_ATTR tpl_set_ntp(HttpdConnData *connData, char *token, void **a
 	char cj[80];
 	if (os_strcmp(token,"v_hostname")==0)
 	{
-//		os_sprintf(buff,"\"%s\"", mFlag.hostname);
-		os_strcpy(buff,mFlag.hostname);
+//		os_sprintf(buff,"\"%s\"", sysCfg.hostname);
+		os_strcpy(buff,sysCfg.hostname);
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
 
 	if (os_strcmp(token,"v_ntp")==0)
 	{
-//		os_sprintf(buff, "\"%s\"", mFlag.ntp);
-		os_strcpy(buff, mFlag.ntp);
+//		os_sprintf(buff, "\"%s\"", sysCfg.ntp);
+		os_strcpy(buff, sysCfg.ntp);
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
 
 	if (os_strcmp(token,"v_timezone")==0)
 	{
-		os_sprintf(cj,"%d", mFlag.timezone);
+		os_sprintf(cj,"%d", sysCfg.timezone);
 		os_sprintf(buff, cj);
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
 	if (os_strcmp(token,"ntp_type_1")==0)
 	{
-		if (mFlag.ntp_flag == 0)
+		if (sysCfg.ntp_flag == 0)
 		{
 		os_sprintf(cj,"checked");
 		}
@@ -77,8 +77,8 @@ int ICACHE_FLASH_ATTR tpl_set_ntp(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token,"ntp_type_2")==0)
 	{
-//		os_strcat(cj, mFlag.tempOff_time);
-		if (mFlag.ntp_flag == 1)
+//		os_strcat(cj, sysCfg.tempOff_time);
+		if (sysCfg.ntp_flag == 1)
 		{
 		os_sprintf(cj,"checked");
 		}
@@ -94,7 +94,7 @@ int ICACHE_FLASH_ATTR tpl_set_ntp(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token,"DST_1")==0)
 	{
-		if (mFlag.dst_flag == 1)
+		if (sysCfg.dst_flag == 1)
 		{
 		os_sprintf(cj,"checked");
 		}
@@ -109,7 +109,7 @@ int ICACHE_FLASH_ATTR tpl_set_ntp(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token,"DST_2")==0)
 	{
-		if (mFlag.dst_flag == 0)
+		if (sysCfg.dst_flag == 0)
 		{
 		os_sprintf(cj,"checked");
 		}
@@ -123,7 +123,7 @@ int ICACHE_FLASH_ATTR tpl_set_ntp(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token,"v_ntpresult")==0)
 	{
-//		os_strcat(cj, mFlag.tempOff_time);
+//		os_strcat(cj, sysCfg.tempOff_time);
 
 		os_sprintf(cj,v_ntpresult);
 		os_sprintf(buff, cj);
@@ -154,14 +154,14 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 	len=httpdFindArg(connData->post->buff, "hn", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.hostname, buff);
+		os_strcpy(sysCfg.hostname, buff);
 	}
 	memset(&buff[0], 0, sizeof(buff));
 
 	len=httpdFindArg(connData->post->buff, "ntpip", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.ntp, buff);
+		os_strcpy(sysCfg.ntp, buff);
 //		os_strcpy(ntp, buff);
 	}
 	memset(&buff[0], 0, sizeof(buff));
@@ -169,7 +169,7 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 	len=httpdFindArg(connData->post->buff, "timezone", buff, sizeof(buff));
 	if (len!=0)
 	{
-		mFlag.timezone = atoi(buff);
+		sysCfg.timezone = atoi(buff);
 //		timezone = atoi(buff);
 	}
 	memset(&buff[0], 0, sizeof(buff));
@@ -179,11 +179,11 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 	{
 		if(os_strcmp(buff,"1") == 0)
 		{
-			mFlag.dst_flag = 1;
+			sysCfg.dst_flag = 1;
 		}
 		else
 		{
-			mFlag.dst_flag = 0;
+			sysCfg.dst_flag = 0;
 		}
 	}
 	memset(&buff[0], 0, sizeof(buff));
@@ -193,18 +193,18 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 	{
 		if(os_strcmp(buff,"1") == 0)
 		{
-			mFlag.ntp_flag = 1;
+			sysCfg.ntp_flag = 1;
 		}
 		else
 		{
-			mFlag.ntp_flag = 0;
+			sysCfg.ntp_flag = 0;
 		}
 	}
 	memset(&buff[0], 0, sizeof(buff));
 	/*
 			ip_addr_t ntp_addr;
 			os_printf("\r\n");
-			ntp_addr.addr = ipaddr_addr(mFlag.ntp);
+			ntp_addr.addr = ipaddr_addr(sysCfg.ntp);
 			os_printf("\r\n");
 			os_printf(IPSTR,IP2STR(&ntp_addr));
 			os_printf("\r\n");
@@ -219,9 +219,9 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 	*/
 	//�������� �������� �����
 
-//	mFlag.timezone = timezone;
-//	os_strcpy(mFlag.ntp, ntp);
-	AddCFG_Save();
+//	sysCfg.timezone = timezone;
+//	os_strcpy(sysCfg.ntp, ntp);
+	SysCFG_Save();
 
 	//������ NTP
 	httpdRedirect(connData, "/set_ntp/set_ntp.tpl");
@@ -280,19 +280,19 @@ int ICACHE_FLASH_ATTR cgi_apply_ntp(HttpdConnData *connData)
 	}
 
 
-	if (mFlag.ntp_flag == 1)
+	if (sysCfg.ntp_flag == 1)
 	{// ntp addr - DNS
 		os_printf("\r\ntp_flag_1\r\n");
 
 		static struct espconn conn;
 		static ip_addr_t ip;
-		espconn_gethostbyname(&conn, mFlag.ntp, &ip, ntpDNSfound);
+		espconn_gethostbyname(&conn, sysCfg.ntp, &ip, ntpDNSfound);
 	}
 	else
 	{
 		os_printf("\r\ntp_flag_0\r\n");
 		ip_addr_t ntp_addr;
-		ntp_addr.addr = ipaddr_addr(mFlag.ntp);
+		ntp_addr.addr = ipaddr_addr(sysCfg.ntp);
 		ntp_server[0] = ip4_addr1_16(&ntp_addr);
 		ntp_server[1] = ip4_addr2_16(&ntp_addr);
 		ntp_server[2] = ip4_addr3_16(&ntp_addr);
@@ -379,7 +379,7 @@ int ICACHE_FLASH_ATTR cgi_PC_Time(HttpdConnData *connData)
 //		INFO(pch);
 //		INFO("\r\n\r\n");
 
-		dt->tm_hour += mFlag.timezone;
+		dt->tm_hour += sysCfg.timezone;
 
 		applyTZ(dt);
 

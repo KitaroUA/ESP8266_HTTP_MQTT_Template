@@ -41,14 +41,14 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 
 /*	if (os_strcmp(token, "working_hr")==0)
 	{
-		uint16 n16 = atoi (mFlag.on_time);
+		uint16 n16 = atoi (sysCfg.on_time);
 		uint8 nh = n16/60;
 		uint8 nm = n16 - nh*60;
-		uint16 f16 = atoi (mFlag.off_time);
+		uint16 f16 = atoi (sysCfg.off_time);
 		uint8 fh = f16/60;
 		uint8 fm = f16 - fh*60;
 
-		if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
+		if ( (atoi(sysCfg.on_time)) < (atoi(sysCfg.off_time)))
 		{
 			os_sprintf(cj,"Режим роботи: %02d:%02d - %02d:%02d",nh,nm,fh,fm);
 			os_strcpy(buff, cj);
@@ -68,12 +68,12 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 
 /*	if (os_strcmp(token, "Temperature")==0)
 		{//Temperature_display_array[0]
-			os_sprintf(cj, "Температура в акваріумі: %d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100);
+			os_sprintf(cj, "Температура в акваріумі: %d.%02d°",ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]])%10000)/100);
 			if (ds18b20_amount_of_devices > 1)
 			{
 				os_sprintf(cj,"Температура в акваріумі: %d.%02d°<br>Температура зовні: %d.%02d°",\
-		ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100,\
-		ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]])%10000)/100 );
+		ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]])%10000)/100,\
+		ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]])%10000)/100 );
 			}
 			os_strcpy(buff,cj);
 		}
@@ -138,7 +138,7 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 	if (os_strcmp(token, "checker_1_text")==0) {
 		if (temporary_light_off_timer == 0 )
 		{
-			os_sprintf(buff,"Тимчасово вимкнути світло на: %d хв.", atoi (mFlag.tempOff_time));
+			os_sprintf(buff,"Тимчасово вимкнути світло на: %d хв.", atoi (sysCfg.tempOff_time));
 //			os_strcpy(buff, "");
 		}
 		else
@@ -154,7 +154,7 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 	if (os_strcmp(token, "checker_2_text")==0) {
 		if (temporary_light_on_timer == 0 )
 		{
-			os_sprintf(buff,"Тимчасово увімкнути світло на: %d хв.", atoi (mFlag.tempOn_time));
+			os_sprintf(buff,"Тимчасово увімкнути світло на: %d хв.", atoi (sysCfg.tempOn_time));
 //			os_strcpy(buff, "");
 		}
 		else
@@ -174,7 +174,7 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 		minutes = uptime / 60;
 		hours = minutes / 60;
 		days = hours /24;
-		os_sprintf(cj,"uptime: %d days, %02d:%02d:%02d<br>try: %d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60), mFlag.try);
+		os_sprintf(cj,"uptime: %d days, %02d:%02d:%02d<br>try: %d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60), sysCfg.try);
 		INFO(cj);
 //		os_sprintf(buff,"uptime: %d days, %02d:%02d:%02d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60));
 //		os_sprintf(buff,"uptime: ");
@@ -225,12 +225,12 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 
 					if(os_strcmp("DS_temperature",buff)==0)
 					{
-					os_sprintf(cj, "Температура в акваріумі: %d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100);
+					os_sprintf(cj, "Температура в акваріумі: %d.%02d°",ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]])%10000)/100);
 					if (ds18b20_amount_of_devices > 1)
 					{
 						os_sprintf(cj,"Температура в акваріумі: %d.%02d°<br>Температура зовні: %d.%02d°<br>Освітленність: %d лк",\
-				ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100,\
-				ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]])%10000)/100,\
+				ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]])%10000)/100,\
+				ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]])%10000)/100,\
 				i2c_BH1750FVI_Illuminance);
 					}
 					os_strcpy(buff,cj);
@@ -246,14 +246,14 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 
 					if(os_strcmp("working_time",buff)==0)
 					{
-						uint16 n16 = atoi (mFlag.on_time);
+						uint16 n16 = atoi (sysCfg.on_time);
 						uint8 nh = n16/60;
 						uint8 nm = n16 - nh*60;
-						uint16 f16 = atoi (mFlag.off_time);
+						uint16 f16 = atoi (sysCfg.off_time);
 						uint8 fh = f16/60;
 						uint8 fm = f16 - fh*60;
 
-						if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
+						if ( (atoi(sysCfg.on_time)) < (atoi(sysCfg.off_time)))
 						{
 							os_sprintf(cj,"Режим роботи: %02d:%02d - %02d:%02d",nh,nm,fh,fm);
 							os_strcpy(buff, cj);
@@ -274,7 +274,7 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						minutes = uptime / 60;
 						hours = minutes / 60;
 						days = hours /24;
-						os_sprintf(cj,"uptime: %d days, %02d:%02d:%02d<br>try: %d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60), mFlag.try);
+						os_sprintf(cj,"uptime: %d days, %02d:%02d:%02d<br>try: %d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60), sysCfg.try);
 //						INFO(cj);
 				//		os_sprintf(buff,"uptime: %d days, %02d:%02d:%02d", days, (int)(hours%24), (int)(minutes%60), (int)(uptime%60));
 				//		os_sprintf(buff,"uptime: ");
@@ -307,14 +307,14 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						memset(&cj[0], 0, sizeof(cj));
 
 						//working_hr
-						uint16 n16 = atoi (mFlag.on_time);
+						uint16 n16 = atoi (sysCfg.on_time);
 						uint8 nh = n16/60;
 						uint8 nm = n16 - nh*60;
-						uint16 f16 = atoi (mFlag.off_time);
+						uint16 f16 = atoi (sysCfg.off_time);
 						uint8 fh = f16/60;
 						uint8 fm = f16 - fh*60;
 
-						if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
+						if ( (atoi(sysCfg.on_time)) < (atoi(sysCfg.off_time)))
 						{
 							os_sprintf(cj,"%02d:%02d - %02d:%02d",nh,nm,fh,fm);
 							os_strcat(buff, cj);
@@ -329,13 +329,13 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						memset(&cj[0], 0, sizeof(cj));
 
 						//temper_DS_1
-						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100);
+						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[0]])%10000)/100);
 						os_strcat(buff, cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
 
 						//temper_DS_2
-						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]])%10000)/100);
+						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[sysCfg.Temperature_display_array[1]])%10000)/100);
 						os_strcat(buff, cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
@@ -375,7 +375,7 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						//	checker_1_time
 						if (temporary_light_off_timer == 0 )
 						{
-							os_sprintf(cj,"%d", atoi (mFlag.tempOff_time));
+							os_sprintf(cj,"%d", atoi (sysCfg.tempOff_time));
 				//			os_strcpy(buff, "");
 						}
 						else
@@ -407,7 +407,7 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						//	checker_2_time
 						if (temporary_light_on_timer == 0 )
 						{
-							os_sprintf(cj,"%d", atoi (mFlag.tempOn_time));
+							os_sprintf(cj,"%d", atoi (sysCfg.tempOn_time));
 				//			os_strcpy(buff, "");
 						}
 						else
@@ -433,7 +433,7 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 
 
 						//	Try
-						os_sprintf(cj,"%d", mFlag.try);
+						os_sprintf(cj,"%d", sysCfg.try);
 						os_strcat(buff,cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
@@ -560,11 +560,11 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 		}
 		if (os_strcmp("true",buff)==0)
 		{
-			temporary_light_off_timer=atoi (mFlag.tempOff_time)*60;;
+			temporary_light_off_timer=atoi (sysCfg.tempOff_time)*60;;
 			temporary_light_on_timer=0;
 		}
-//		mFlag.minLight = atoi (buff);
-//		AddCFG_Save();
+//		sysCfg.minLight = atoi (buff);
+//		SysCFG_Save();
 	}
 	memset(&buff[0], 0, sizeof(buff));
 
@@ -583,11 +583,11 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 		}
 		if (os_strcmp("true",buff)==0)
 		{
-			temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;
+			temporary_light_on_timer=atoi (sysCfg.tempOn_time)*60;
 			temporary_light_off_timer=0;
 		}
-//		mFlag.minLight = atoi (buff);
-//		AddCFG_Save();
+//		sysCfg.minLight = atoi (buff);
+//		SysCFG_Save();
 	}
 	memset(&buff[0], 0, sizeof(buff));
 

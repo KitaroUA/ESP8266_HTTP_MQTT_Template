@@ -11,6 +11,8 @@ uint8 one_sec_task_state = 0;
 
 void every_second_task();
 void every_5_second_task();
+void every_10_second_task();
+
 
 
 
@@ -21,10 +23,24 @@ static uint8 ICACHE_FLASH_ATTR decToBcd(uint8 dec) {
   return(((dec / 10) * 16) + (dec % 10));
 }
 
+
+
+
+
+
 void ICACHE_FLASH_ATTR init_circular_timer_proc(void)
 {
 	circular_timer_proc();
 }
+
+
+
+
+
+
+
+
+
 
 void ICACHE_FLASH_ATTR circular_timer_proc(void)
 {
@@ -38,6 +54,10 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 		if(sec%5 == 0)	//	Every 5 sec task
 		{
 			every_5_second_task();
+		}
+		if(sec%10 == 0)	//	Every 10 sec task
+		{
+			every_10_second_task();
 		}
 
 
@@ -103,7 +123,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 		// 	MQTT tasks
 			MQTT_Client* client_publish = &mqttClient;
 			os_printf("\r\n MQTT conn state %d\r\n",client_publish->connState);
-			if ((client_publish->connState == 15)& (mFlag.mqtt_task_enabled == 1))
+			if ((client_publish->connState == 15)& (sysCfg.mqtt_task_enabled == 1))
 			{
 				INFO("\r\nSend MQTT\r\n");
 					char tc[80];
@@ -132,7 +152,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 
 			// Check is DST time
 
-			if ( ((DS3231_Time[1] == 3)&(mFlag.dst_active=0)) | ((DS3231_Time[0] == 4)&(mFlag.dst_active=1)))
+			if ( ((DS3231_Time[1] == 3)&(sysCfg.dst_active=0)) | ((DS3231_Time[0] == 4)&(sysCfg.dst_active=1)))
 			{
 			struct tm *dt;
 			time_t timestamp = 1522921929;
@@ -156,7 +176,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 			os_sprintf(cj, "gmt: %d %02d:%02d:%02d %02d.%02d.%04d, %d",  dt->tm_isdst, dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900, dt->tm_wday);
 			os_printf(cj);
 			os_printf("\r\n");
-			if(dt->tm_isdst != mFlag.dst_active)
+			if(dt->tm_isdst != sysCfg.dst_active)
 			{
 				if (dt->tm_isdst != 0)
 				{
@@ -169,8 +189,8 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 					dt->tm_hour -= 1;
 
 				}
-				mFlag.dst_active = dt->tm_isdst;
-				AddCFG_Save();
+				sysCfg.dst_active = dt->tm_isdst;
+				SysCFG_Save();
 				mktime(dt);
 
 
@@ -249,16 +269,16 @@ void ICACHE_FLASH_ATTR every_second_task()
 	// -------------------------
 		uint16 cur_time = (bcdToDec(DS3231_Time[2]))*60+bcdToDec(DS3231_Time[1]);
 //		os_printf("%X:%X=%d \r\n",DS3231_Time[2], DS3231_Time[1], (bcdToDec(DS3231_Time[2]))*60+bcdToDec(DS3231_Time[1]));
-//		os_printf("%d %d %d\r\n",cur_time, atoi(mFlag.on_time),atoi(mFlag.off_time));
+//		os_printf("%d %d %d\r\n",cur_time, atoi(sysCfg.on_time),atoi(sysCfg.off_time));
 
-		if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
+		if ( (atoi(sysCfg.on_time)) < (atoi(sysCfg.off_time)))
 		{ // light control template - off-on-off
 //			INFO ("          1          ");
 			if (    (
-					(cur_time >= atoi(mFlag.on_time))
-					&(cur_time<=atoi(mFlag.off_time))
+					(cur_time >= atoi(sysCfg.on_time))
+					&(cur_time<=atoi(sysCfg.off_time))
 					&(temporary_light_off_timer == 0)
-					&((light_avg <= mFlag.minLight)|(mFlag.minLight ==0))
+					&((light_avg <= sysCfg.minLight)|(sysCfg.minLight ==0))
 					)
 					|(temporary_light_on_timer != 0)
 				)
@@ -278,9 +298,9 @@ void ICACHE_FLASH_ATTR every_second_task()
 		{// light control template - on-of-on
 //			INFO ("          2          ");
 			if (    (
-					((cur_time >= atoi(mFlag.on_time)|(cur_time < atoi(mFlag.off_time))))
+					((cur_time >= atoi(sysCfg.on_time)|(cur_time < atoi(sysCfg.off_time))))
 					&(temporary_light_off_timer == 0)
-					&((light_avg <= mFlag.minLight)|(mFlag.minLight ==0))
+					&((light_avg <= sysCfg.minLight)|(sysCfg.minLight ==0))
 					)
 					|(temporary_light_on_timer != 0)
 				)
@@ -322,6 +342,14 @@ void ICACHE_FLASH_ATTR every_second_task()
 
 void ICACHE_FLASH_ATTR every_5_second_task ()
 {
+
+#ifdef SCAN_IIC
+		i2c_Read_Scan(SCAN_IIC_first_address,SCAN_IIC_last_address);
+#endif
+
+
+
+
 	static uint8 ds_screen_tick;
 	// start reading devices...
 		// ... i'm handing off with a timer, could have called directly
@@ -409,6 +437,27 @@ void ICACHE_FLASH_ATTR every_5_second_task ()
 
 
 
+
+
+}
+
+
+
+
+
+void ICACHE_FLASH_ATTR every_10_second_task ()
+{
+	ADS1015_REG_GAIN_selector = 3;
+	ads1015_channel_to_read = 0;
+	ads1015ReadADC_SingleRead();
+
+	char cj[8];
+	os_sprintf(cj, "    ");
+	cj[(sizeof(cj)-1)]=0;
+	i2c_SSD1306_Send_GB_Addr_String( 0,2, SSDFONT_1X,cj);
+	os_sprintf(cj, "%d",2048 - ads1015_data[0]);
+	cj[(sizeof(cj)-1)]=0;
+	i2c_SSD1306_Send_GB_Addr_String( 0,2, SSDFONT_1X,cj);
 
 
 }

@@ -35,13 +35,13 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 
 
 	if (os_strcmp(token, "v_onT")==0) {
-			uint16 m16 = atoi (mFlag.on_time);
+			uint16 m16 = atoi (sysCfg.on_time);
 			uint8 h = m16/60;
 			uint8 m = m16 - h*60;
 			os_sprintf(cj,"%02d:%02d", h, m);
 			os_strcpy(buff,cj);
 
-			m16 = atoi (mFlag.off_time);
+			m16 = atoi (sysCfg.off_time);
 			h = m16/60;
 			m = m16 - h*60;
 			os_sprintf(cj," - %02d:%02d", h, m);
@@ -54,13 +54,13 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 
 
 	if (os_strcmp(token, "minLight")==0) {
-		if ((char *)mFlag.minLight == "" )
+		if ((char *)sysCfg.minLight == "" )
 		{
 			os_strcpy(buff, "");
 		}
 		else
 		{
-			os_sprintf(cj,"%d", mFlag.minLight);
+			os_sprintf(cj,"%d", sysCfg.minLight);
 			os_strcpy(buff,cj);
 		}
 	}
@@ -69,7 +69,7 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 	if (os_strcmp(token,"v_tempOn")==0)
 	{
 		os_strcpy(cj, "\"");
-		os_strcat(cj, mFlag.tempOn_time);
+		os_strcat(cj, sysCfg.tempOn_time);
 		os_strcat(cj, "\"");
 		os_sprintf(buff, cj);
 	}
@@ -78,7 +78,7 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 	if (os_strcmp(token,"v_tempOff")==0)
 	{
 		os_strcpy(cj, "\"");
-		os_strcat(cj, mFlag.tempOff_time);
+		os_strcat(cj, sysCfg.tempOff_time);
 		os_strcat(cj, "\"");
 		os_sprintf(buff, cj);
 	}

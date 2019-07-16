@@ -31,7 +31,7 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 
 	if (os_strcmp(token, "time_to_on_select")==0)
 	{
-		uint16 m16 = atoi (mFlag.on_time);
+		uint16 m16 = atoi (sysCfg.on_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
@@ -42,8 +42,8 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 
 /*	if (os_strcmp(token, "time_to_on_d")==0)
 	{
-//		os_strcpy(buff,mFlag.on_time);
-		uint16 m16 = atoi (mFlag.on_time);
+//		os_strcpy(buff,sysCfg.on_time);
+		uint16 m16 = atoi (sysCfg.on_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
@@ -55,7 +55,7 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 
 	if (os_strcmp(token, "time_to_off_select")==0)
 	{
-		uint16 m16 = atoi (mFlag.off_time);
+		uint16 m16 = atoi (sysCfg.off_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
@@ -65,8 +65,8 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 	memset(&cj[0], 0, sizeof(cj));
 /*	if (os_strcmp(token, "time_to_off_d")==0)
 	{
-//		os_strcpy(buff,mFlag.off_time);
-		uint16 m16 = atoi (mFlag.off_time);
+//		os_strcpy(buff,sysCfg.off_time);
+		uint16 m16 = atoi (sysCfg.off_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
@@ -103,8 +103,8 @@ int ICACHE_FLASH_ATTR cgi_working_time_selector_1(HttpdConnData *connData) {
 		INFO("ON:");
 		INFO(ct);
 		INFO("\r\n\r\n");
-		os_strcpy(mFlag.on_time,ct);
-		AddCFG_Save();
+		os_strcpy(sysCfg.on_time,ct);
+		SysCFG_Save();
 	}
 
 
@@ -120,8 +120,8 @@ int ICACHE_FLASH_ATTR cgi_working_time_selector_1(HttpdConnData *connData) {
 		INFO("OFF:");
 		INFO(ct);
 		INFO("\r\n\r\n");
-		os_strcpy(mFlag.off_time,ct);
-		AddCFG_Save();
+		os_strcpy(sysCfg.off_time,ct);
+		SysCFG_Save();
 	}
 
 	httpdRedirect(connData, "/working_time_selector/working_time_selector.tpl");

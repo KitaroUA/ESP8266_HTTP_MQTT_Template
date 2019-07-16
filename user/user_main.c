@@ -353,6 +353,7 @@ void ICACHE_FLASH_ATTR mqttConnectedCb(uint32_t *args)
 	MQTT_Publish(client, "/esp1/Hum",  "0", 1, 1, 0);
 	MQTT_Publish(client, "/esp1/LED",  "0", 1, 1, 0);
 	MQTT_Publish(client, "/esp1/NTP",  "0", 1, 1, 0);
+	MQTT_Publish(client, "/esp1/ADS01",  "0", 1, 1, 0);
 
 }
 
@@ -569,7 +570,7 @@ void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
 void ICACHE_FLASH_ATTR NextionRXCommand(char* str) {
 if (!strcmp(str, "+"))
 	{
-	if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;}
+	if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (sysCfg.tempOn_time)*60;}
 	else if (temporary_light_on_timer != 0) {temporary_light_on_timer=0;}
 	}
 else if (!strcmp(str, "-"))
@@ -606,9 +607,9 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 
 
-	AddCFG_Load();
-	mFlag.try++;
-	AddCFG_Save();
+	SysCFG_Load();
+	sysCfg.try++;
+	SysCFG_Save();
 
 
 
@@ -647,11 +648,11 @@ uint8_t work_mode = 0;
 
 
 
-		mFlag.try++;
+		sysCfg.try++;
 
-//		INFO ("\r\n Try Setup = %d \r\n", mFlag.try);
+//		INFO ("\r\n Try Setup = %d \r\n", sysCfg.try);
 
-		if(mFlag.try == 2)
+		if(sysCfg.try == 2)
 		/*
 		 * Init of flash variables
 		 * |||||||||||||||||||||||||
@@ -659,14 +660,14 @@ uint8_t work_mode = 0;
 		 */
 
 			Default_CFG();
-			SysCFG_Load(1);
+			SysCFG_Load();
 
 		/* ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 		 * |||||||||||||||||||||||||
 		 * Init of flash variables
 		 */
-		mFlag.try=0;
-		AddCFG_Save();
+		sysCfg.try=0;
+		SysCFG_Save();
 
 
 	}
@@ -708,9 +709,9 @@ captdnsInit();
 
 
 	// Apply some Time zone vars
-	_daylight = mFlag.dst_flag;                 // Non-zero if daylight savings time is used
+	_daylight = sysCfg.dst_flag;                 // Non-zero if daylight savings time is used
 	_dstbias = 3600;                  			// Offset for Daylight Saving Time
-	_timezone = 0 - (mFlag.timezone*3600);      // Difference in seconds between GMT and local time
+	_timezone = 0 - (sysCfg.timezone*3600);      // Difference in seconds between GMT and local time
 
 
 
@@ -752,11 +753,12 @@ if(work_mode == 0)
 	i2c_SSD1306_Init();
 
 	SetTimerTask(ds18b20_timer, ds18b20_search, 1500, 0);
-//	SetTimerTask(PCA9685_timer, i2c_PCA9685_Init, 2, 0);
+//	SetTimerTask(PCA9685_timer, i2c_PCA9685_Init, 20, 0);
 
-	i2c_PCF8574_enabled = 1;
 
-//	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
+//	i2c_PCF8574_enabled = 1;
+
+	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 
 //	SetTimerTask(mpr121_timer, i2c_mpr121_Init, 5000, 0);
 
@@ -826,8 +828,8 @@ if(work_mode == 0)
 
 
 
-	BitBang_TLC5947(1, 7, 8, 6);
-	BitBang_TLC5947_begin();
+//	BitBang_TLC5947(1, 7, 8, 6);
+//	BitBang_TLC5947_begin();
 
 }
 else

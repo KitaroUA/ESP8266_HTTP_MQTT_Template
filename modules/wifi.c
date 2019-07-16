@@ -89,6 +89,7 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	os_sprintf(stationConf.password, "%s", pass);
 	INFO("\r\n%s", ssid);
 	INFO("\r\n%s\r\n", pass);
+	INFO("\r\n%d\r\n", sysCfg.dhcp_sta_enabled);
 
 	wifi_station_set_config(&stationConf);
 

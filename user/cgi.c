@@ -100,7 +100,7 @@ int ICACHE_FLASH_ATTR tplshowTime(HttpdConnData *connData, char *token, void **a
 
 //	��� � ����� ��� �������� ��� ����� ������ ���� ���������
 	os_strcpy(cj, "on_t_");
-	os_strcat(cj, mFlag.on_time);
+	os_strcat(cj, sysCfg.on_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -115,7 +115,7 @@ int ICACHE_FLASH_ATTR tplshowTime(HttpdConnData *connData, char *token, void **a
 	memset(&cj[0], 0, sizeof(cj));
 
 	os_strcpy(cj, "off_t_");
-	os_strcat(cj, mFlag.off_time);
+	os_strcat(cj, sysCfg.off_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -206,12 +206,12 @@ int ICACHE_FLASH_ATTR cgi_btn_time(HttpdConnData *connData)
 	len=httpdFindArg(connData->post->buff, "on_time", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.on_time,buff);
+		os_strcpy(sysCfg.on_time,buff);
 	}
 	len=httpdFindArg(connData->post->buff, "off_time", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.off_time,buff);
+		os_strcpy(sysCfg.off_time,buff);
 	}
 
 
@@ -264,7 +264,7 @@ int ICACHE_FLASH_ATTR tpl_set_min_light(HttpdConnData *connData, char *token, vo
 	char cj[80];
 		if (os_strcmp(token,"v_minLight")==0)
 		{
-			os_sprintf(cj,"\"%d\"",mFlag.minLight);
+			os_sprintf(cj,"\"%d\"",sysCfg.minLight);
 			os_sprintf(buff, cj);
 		}
 		else
@@ -287,8 +287,8 @@ int ICACHE_FLASH_ATTR cgi_set_min_light(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "min_light", buff, sizeof(buff));
 	if (len!=0) {
-		mFlag.minLight = atoi (buff);
-		AddCFG_Save();
+		sysCfg.minLight = atoi (buff);
+		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_min_light/set_min_light.tpl");
 	return HTTPD_CGI_DONE;
@@ -307,7 +307,7 @@ int ICACHE_FLASH_ATTR tpl_set_off_time(HttpdConnData *connData, char *token, voi
 	if (token==NULL) return HTTPD_CGI_DONE;
 	char cj[80];
 	os_strcpy(cj, "off_t_");
-	os_strcat(cj, mFlag.off_time);
+	os_strcat(cj, sysCfg.off_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -335,8 +335,8 @@ int ICACHE_FLASH_ATTR cgi_set_off_time(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "off_time", buff, sizeof(buff));
 	if (len!=0) {
-		os_strcpy(mFlag.off_time,buff);
-		AddCFG_Save();
+		os_strcpy(sysCfg.off_time,buff);
+		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_off_time/set_off_time.tpl");
 	return HTTPD_CGI_DONE;
@@ -352,7 +352,7 @@ int ICACHE_FLASH_ATTR tpl_set_on_time(HttpdConnData *connData, char *token, void
 	if (token==NULL) return HTTPD_CGI_DONE;
 	char cj[80];
 	os_strcpy(cj, "on_t_");
-	os_strcat(cj, mFlag.on_time);
+	os_strcat(cj, sysCfg.on_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -380,8 +380,8 @@ int ICACHE_FLASH_ATTR cgi_set_on_time(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "on_time", buff, sizeof(buff));
 	if (len!=0) {
-		os_strcpy(mFlag.on_time,buff);
-		AddCFG_Save();
+		os_strcpy(sysCfg.on_time,buff);
+		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_on_time/set_on_time.tpl");
 	return HTTPD_CGI_DONE;
@@ -399,7 +399,7 @@ int ICACHE_FLASH_ATTR tpl_set_temp_off(HttpdConnData *connData, char *token, voi
 		if (os_strcmp(token,"v_tempOff")==0)
 		{
 			os_strcpy(cj, "\"");
-			os_strcat(cj, mFlag.tempOff_time);
+			os_strcat(cj, sysCfg.tempOff_time);
 			os_strcat(cj, "\"");
 			os_sprintf(buff, cj);
 		}
@@ -423,9 +423,9 @@ int ICACHE_FLASH_ATTR cgi_set_temp_off(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "temp_off", buff, sizeof(buff));
 	if (len!=0) {
-//		temporary_light_off_timer = atoi (mFlag.tempOff_time)*60;
-		os_strcpy(mFlag.tempOff_time,buff);
-		AddCFG_Save();
+//		temporary_light_off_timer = atoi (sysCfg.tempOff_time)*60;
+		os_strcpy(sysCfg.tempOff_time,buff);
+		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_temp_off/set_temp_off.tpl");
 	return HTTPD_CGI_DONE;

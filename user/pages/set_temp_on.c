@@ -20,7 +20,7 @@ int ICACHE_FLASH_ATTR tpl_set_temp_on(HttpdConnData *connData, char *token, void
 		if (os_strcmp(token,"v_tempOn")==0)
 		{
 			os_strcpy(cj, "\"");
-			os_strcat(cj, mFlag.tempOn_time);
+			os_strcat(cj, sysCfg.tempOn_time);
 			os_strcat(cj, "\"");
 			os_sprintf(buff, cj);
 		}
@@ -44,9 +44,9 @@ int ICACHE_FLASH_ATTR cgi_set_temp_on(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "temp_on", buff, sizeof(buff));
 	if (len!=0) {
-//		temporary_light_on_timer = atoi (mFlag.tempOn_time)*60;
-		os_strcpy(mFlag.tempOn_time,buff);
-		AddCFG_Save();
+//		temporary_light_on_timer = atoi (sysCfg.tempOn_time)*60;
+		os_strcpy(sysCfg.tempOn_time,buff);
+		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_temp_on/set_temp_on.tpl");
 	return HTTPD_CGI_DONE;

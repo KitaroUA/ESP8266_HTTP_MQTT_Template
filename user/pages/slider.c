@@ -44,21 +44,23 @@ int ICACHE_FLASH_ATTR cgi_set_slider(HttpdConnData *connData)
 	}
 	len=httpdFindArg(connData->post->buff, "slider_pos", buff, sizeof(buff));
 	if (len!=0) {
-//		temporary_light_on_timer = atoi (mFlag.tempOn_time)*60;
+//		temporary_light_on_timer = atoi (sysCfg.tempOn_time)*60;
 #ifdef debug_slider
 //		INFO("\r\n\buff: %s\r\n",buff);
 		INFO("\r\n\buff: %s\r\n",(slider_pos*4096)/100);
 #endif
 		slider_pos = atoi (buff);
+//		i2c_PCA9685_Servo_Simple(1,0,slider_pos);
 
-		uint8_t ii;
+/*
+ * 	uint8_t ii;
 		for (ii=0;ii<24;ii++)
 		{
 		BitBang_TLC5947_setPWM(ii,(slider_pos*4096)/100);
 		}
 		BitBang_TLC5947_write();
-
-//		AddCFG_Save();
+*/
+//		SysCFG_Save();
 	}
 	httpdRedirect(connData, "/set_temp_on/set_temp_on.tpl");
 	return HTTPD_CGI_DONE;
